@@ -1,8 +1,6 @@
 name: 'Deploy workflow'
 
 
-on: [push]
-
 jobs:
   Build-Linux-Ubuntu:
     name: 'Build-Linux-Ubuntu'
