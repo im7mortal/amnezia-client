@@ -1,10 +1,9 @@
 name: 'Release deploy workflow'
 
-on: 
-  workflow_dispatch:
-  # push:
-  # tags:
-  #   - **
+on:
+  push:
+    tags:
+      - '*.*.*'
 
 jobs:
 
@@ -89,17 +88,6 @@ jobs:
         submodules: 'true'
         fetch-depth: 10
 
-    - name: 'Preparations before keystore fetching'
-      run: | 
-        mkdir keystore
-
-    - name: 'Getting keystore'
-      uses: actions/checkout@v3  
-      with:
-        repository: amnezia-vpn/amnezia-android-certificates
-        ssh-key: ${{ secrets.ANDROID_CERTS_SSH_PRIVATE_KEY }}
-        path: keystore
-
     - name: 'Setup ccache'
       uses: hendrikmuhs/ccache-action@v1.2
 
@@ -126,17 +114,13 @@ jobs:
         cd main
         bash deploy/build_android.sh
 
-    - name: 'Signing APK'
-      run: |
-        pwd
+    - name: Set git tag as app version without dots. For example from "3.0.11" to "3011"
+      run: echo "tagv=$(echo "${{ env.tag }}" | sed 's/v//g' | tr -d '.')" | tee $GITHUB_ENV
 
-        ANDROID_BUILD_TOOLS_VERSION=30.0.3
-
-        ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS_VERSION}/zipalign -f -v 4 AmneziaVPN-release-unsigned.apk AmneziaVPN-release-aligned.apk
-        ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS_VERSION}/apksigner sign --out AmneziaVPN-release-signed.apk --ks keystore/debug.keystore --ks-key-alias ${{ secrets.DEBUG_ANDROID_KEYSTORE_KEY_ALIAS }} --ks-pass pass:${{secrets.DEBUG_ANDROID_KEYSTOTE_KEY_PASS }} AmneziaVPN-release-aligned.apk
-
-    - name: 'Upload'
+    - name: 'Upload APK'
       uses: actions/upload-artifact@v3
       with:
-        name: Release APK
-        path: ${{ runner.temp }}/main/AmneziaVPN-release-signed.apk
+        name: org.amnezia.vpn_${{ env.tagv }}-unsigned.apk
+        path: /home/runner/work/amnezia-client/amnezia-client/main/AmneziaVPN-release-unsigned.apk
+        retention-days: 7
+
