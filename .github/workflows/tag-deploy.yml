@@ -1,10 +1,9 @@
 name: 'Release deploy workflow'
 
-on: 
-  workflow_dispatch:
-  # push:
-  # tags:
-  #   - **
+on:
+  push:
+    tags:
+      - '*.*.*'
 
 jobs:
 
@@ -89,17 +88,6 @@ jobs:
         submodules: 'true'
         fetch-depth: 10
 
-    - name: 'Preparations before keystore fetching'
-      run: | 
-        mkdir keystore
-
-    - name: 'Getting keystore'
-      uses: actions/checkout@v3  
-      with:
-        repository: amnezia-vpn/amnezia-android-certificates
-        ssh-key: ${{ secrets.ANDROID_CERTS_SSH_PRIVATE_KEY }}
-        path: keystore
-
     - name: 'Setup ccache'
       uses: hendrikmuhs/ccache-action@v1.2
 
@@ -126,17 +114,114 @@ jobs:
         cd main
         bash deploy/build_android.sh
 
-    - name: 'Signing APK'
-      run: |
-        pwd
-
-        ANDROID_BUILD_TOOLS_VERSION=30.0.3
-
-        ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS_VERSION}/zipalign -f -v 4 AmneziaVPN-release-unsigned.apk AmneziaVPN-release-aligned.apk
-        ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS_VERSION}/apksigner sign --out AmneziaVPN-release-signed.apk --ks keystore/debug.keystore --ks-key-alias ${{ secrets.DEBUG_ANDROID_KEYSTORE_KEY_ALIAS }} --ks-pass pass:${{secrets.DEBUG_ANDROID_KEYSTOTE_KEY_PASS }} AmneziaVPN-release-aligned.apk
-
-    - name: 'Upload'
+    - name: 'Upload APK'
       uses: actions/upload-artifact@v3
       with:
-        name: Release APK
-        path: ${{ runner.temp }}/main/AmneziaVPN-release-signed.apk
+        name: AmneziaVPN-release-unsigned.apk
+        path: /home/runner/work/amnezia-client/amnezia-client/main/AmneziaVPN-release-unsigned.apk
+        retention-days: 7
+
+  Update-F-Droid-Repository:
+    name: 'Update-F-Droid-Repository'
+    needs:
+      - 'Build-Android-Release'
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Install F-Droid server software
+      run: |
+        sudo add-apt-repository ppa:fdroid/fdroidserver
+        sudo apt-get update
+        sudo apt-get install fdroidserver
+
+    - name: HACK fdroid tools doesn't work with no ACL buckets
+      run: |
+        sudo curl -o /usr/lib/python3/dist-packages/fdroidserver/deploy.py https://gitlab.com/petrl/fdroidserver/-/raw/0011f003f5e3eed7eeb878654d9c2ef1c8fed83f/fdroidserver/deploy.py
+
+    - name: 'Get sources'
+      uses: actions/checkout@v3
+
+    - name: 'Setup ccache'
+      uses: hendrikmuhs/ccache-action@v1.2
+
+    - name: Set git tag as app version. For example from "3.0.11"
+      run: echo "tag=${GITHUB_REF#refs/*/}" | tee $GITHUB_ENV
+
+    - name: Set git tag as app version without dots. For example from "3.0.11" to "3011"
+      run: echo "tagv=$(echo "${{ env.tag }}" | sed 's/v//g' | tr -d '.')" | tee $GITHUB_ENV
+
+    - name: Set up repo secrets
+      run: |
+        echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > fdroid/keystore.p12
+        
+        # KEYSTORE secrets has "/" so use "|" in the sed
+        sed -i "s|SECRET_KEYSTOREPASS|${{ secrets.SECRET_KEYSTOREPASS }}|g" fdroid/config.yml
+        sed -i "s|SECRET_KEYPASS|${{ secrets.SECRET_KEYPASS }}|g" fdroid/config.yml
+        sed -i "s|SECRET_FDROID_BUCKET|${{ secrets.SECRET_FDROID_BUCKET }}|g" fdroid/config.yml
+        
+        sudo chmod 0600 fdroid/config.yml
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+#    - name: DEV download precompiled file for testing
+#      run: |
+#        mkdir -p fdroid/unsigned/
+#        aws s3 cp s3://${{ secrets.SECRET_FDROID_BUCKET }}/org.amnezia.vpn_309.apk fdroid/unsigned/org.amnezia.vpn_${{ env.tagv }}.apk
+
+    - name: Download unsigned APK from artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: AmneziaVPN-release-unsigned.apk
+        path: fdroid/unsigned
+
+    - name: Set required artifact APK name
+      run: |
+        mv fdroid/unsigned/AmneziaVPN-release-unsigned.apk fdroid/unsigned/org.amnezia.vpn_${{ env.tagv }}.apk
+
+    - name: Set version in template yaml
+      run: |
+        sed -i "s/TAG_VERSION/${{ env.tag }}/g" fdroid/metadata/org.amnezia.vpn.yml
+        sed -i "s/TAG_CODE_VERSION/${{ env.tagv }}/g" fdroid/metadata/org.amnezia.vpn.yml
+
+    - name: Download from root of s3 bucket
+      run: |
+        aws s3 cp s3://amneziavpn/fdroid/repo fdroid/repo --recursive
+        aws s3 cp s3://amneziavpn/fdroid/archive fdroid/archive --recursive
+
+    - name: Run fdroid publish
+      run: |
+        cd ./fdroid
+        fdroid publish
+
+    - name: Run fdroid update
+      run: |
+        cd ./fdroid
+        fdroid update
+
+    - name: Run fdroid deploy
+      run: |
+        cd ./fdroid
+        fdroid deploy
+
+    - name: Install aws cli for cloudfront invalidation
+      id: install-aws-cli
+      uses: unfor19/install-aws-cli-action@master
+      with:
+        version: "2"
+
+    - name: Invalidate cache on cloudfront distribution
+      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.DISTRIBUTION_ID }} --paths "/*"
+      shell: bash
+
+    - name: 'Upload APK'
+      uses: actions/upload-artifact@v3
+      with:
+        name: org.amnezia.vpn_${{ env.tagv }}.apk
+        path: fdroid/repo/org.amnezia.vpn_${{ env.tagv }}.apk
+        retention-days: 7
+
