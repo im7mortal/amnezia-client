@@ -127,6 +127,23 @@ jobs:
       - 'Build-Android-Release'
     runs-on: ubuntu-latest
     steps:
+
+    - name: Install F-Droid server software
+      run: |
+        sudo add-apt-repository ppa:fdroid/fdroidserver
+        sudo apt-get update
+        sudo apt-get install fdroidserver
+
+    - name: HACK fdroid tools doesn't work with no ACL buckets
+      run: |
+        sudo curl -o /usr/lib/python3/dist-packages/fdroidserver/deploy.py https://gitlab.com/petrl/fdroidserver/-/raw/0011f003f5e3eed7eeb878654d9c2ef1c8fed83f/fdroidserver/deploy.py
+
+    - name: 'Get sources'
+      uses: actions/checkout@v3
+
+    - name: 'Setup ccache'
+      uses: hendrikmuhs/ccache-action@v1.2
+
     - name: Set git tag as app version. For example from "3.0.11"
       run: echo "tag=${GITHUB_REF#refs/*/}" | tee $GITHUB_ENV
 
@@ -135,14 +152,14 @@ jobs:
 
     - name: Set up repo secrets
       run: |
-        echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > main/fdroid/keystore.p12
+        echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > fdroid/keystore.p12
         
         # KEYSTORE secrets has "/" so use "|" in the sed
-        sed -i "s|SECRET_KEYSTOREPASS|${{ secrets.SECRET_KEYSTOREPASS }}|g" main/fdroid/config.yml
-        sed -i "s|SECRET_KEYPASS|${{ secrets.SECRET_KEYPASS }}|g" main/fdroid/config.yml
-        sed -i "s|SECRET_FDROID_BUCKET|${{ secrets.SECRET_FDROID_BUCKET }}|g" main/fdroid/config.yml
+        sed -i "s|SECRET_KEYSTOREPASS|${{ secrets.SECRET_KEYSTOREPASS }}|g" fdroid/config.yml
+        sed -i "s|SECRET_KEYPASS|${{ secrets.SECRET_KEYPASS }}|g" fdroid/config.yml
+        sed -i "s|SECRET_FDROID_BUCKET|${{ secrets.SECRET_FDROID_BUCKET }}|g" fdroid/config.yml
         
-        sudo chmod 0600 main/fdroid/config.yml
+        sudo chmod 0600 fdroid/config.yml
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -164,36 +181,27 @@ jobs:
 
     - name: Set version in template yaml
       run: |
-        sed -i "s/TAG_VERSION/${{ env.tag }}/g" main/fdroid/metadata/org.amnezia.vpn.yml
-        sed -i "s/TAG_CODE_VERSION/${{ env.tagv }}/g" main/fdroid/metadata/org.amnezia.vpn.yml
+        sed -i "s/TAG_VERSION/${{ env.tag }}/g" fdroid/metadata/org.amnezia.vpn.yml
+        sed -i "s/TAG_CODE_VERSION/${{ env.tagv }}/g" fdroid/metadata/org.amnezia.vpn.yml
 
     - name: Download from root of s3 bucket
       run: |
-        aws s3 cp s3://amneziavpn/fdroid/repo main/fdroid/repo --recursive
-
-    - name: Install F-Droid server software
-      run: |
-        sudo add-apt-repository ppa:fdroid/fdroidserver
-        sudo apt-get update
-        sudo apt-get install fdroidserver
-
-    - name: HACK fdroid tools doesn't work with no ACL buckets
-      run: |
-        sudo curl -o /usr/lib/python3/dist-packages/fdroidserver/deploy.py https://gitlab.com/petrl/fdroidserver/-/raw/0011f003f5e3eed7eeb878654d9c2ef1c8fed83f/fdroidserver/deploy.py
+        aws s3 cp s3://amneziavpn/fdroid/repo fdroid/repo --recursive
+        aws s3 cp s3://amneziavpn/fdroid/archive fdroid/archive --recursive
 
     - name: Run fdroid publish
       run: |
-        cd ./main/fdroid
+        cd ./fdroid
         fdroid publish
 
     - name: Run fdroid update
       run: |
-        cd ./main/fdroid
+        cd ./fdroid
         fdroid update
 
     - name: Run fdroid deploy
       run: |
-        cd ./main/fdroid
+        cd ./fdroid
         fdroid deploy
 
     - name: Install aws cli for cloudfront invalidation
@@ -210,6 +218,6 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: org.amnezia.vpn_${{ env.tagv }}.apk
-        path: main/fdroid/repo/org.amnezia.vpn_${{ env.tagv }}.apk
+        path: fdroid/repo/org.amnezia.vpn_${{ env.tagv }}.apk
         retention-days: 7
 
