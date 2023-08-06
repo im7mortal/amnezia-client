@@ -177,7 +177,11 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: AmneziaVPN-release-unsigned.apk
-        path: fdroid/unsigned/org.amnezia.vpn_${{ env.tagv }}.apk
+        path: fdroid/unsigned
+
+    - name: Set required artifact APK name
+      run: |
+        mv fdroid/unsigned/AmneziaVPN-release-unsigned.apk fdroid/unsigned/org.amnezia.vpn_${{ env.tagv }}.apk
 
     - name: Set version in template yaml
       run: |
