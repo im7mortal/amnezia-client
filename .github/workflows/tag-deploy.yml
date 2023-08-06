@@ -114,7 +114,19 @@ jobs:
         cd main
         bash deploy/build_android.sh
 
-    # F-Droid pipeline
+    - name: 'Upload APK'
+      uses: actions/upload-artifact@v3
+      with:
+        name: AmneziaVPN-release-unsigned.apk
+        path: /home/runner/work/amnezia-client/amnezia-client/main/AmneziaVPN-release-unsigned.apk
+        retention-days: 7
+
+  Update-F-Droid-Repository:
+    name: 'Update-F-Droid-Repository'
+    needs:
+      - 'Build-Android-Release'
+    runs-on: ubuntu-latest
+    steps:
     - name: Set git tag as app version. For example from "3.0.11"
       run: echo "tag=${GITHUB_REF#refs/*/}" | tee $GITHUB_ENV
 
@@ -144,10 +156,11 @@ jobs:
 #        mkdir -p fdroid/unsigned/
 #        aws s3 cp s3://${{ secrets.SECRET_FDROID_BUCKET }}/org.amnezia.vpn_309.apk fdroid/unsigned/org.amnezia.vpn_${{ env.tagv }}.apk
 
-    - name: Copy unsigned apk to unsigned dir
-      run: |
-        mkdir -p main/fdroid/unsigned/
-        cp /home/runner/work/amnezia-client/amnezia-client/main/AmneziaVPN-release-unsigned.apk main/fdroid/unsigned/org.amnezia.vpn_${{ env.tagv }}.apk
+    - name: Download unsigned APK from artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: AmneziaVPN-release-unsigned.apk
+        path: fdroid/unsigned/org.amnezia.vpn_${{ env.tagv }}.apk
 
     - name: Set version in template yaml
       run: |
