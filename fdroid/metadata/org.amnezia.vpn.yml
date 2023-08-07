@@ -14,7 +14,6 @@ Description: |
   Specify IP address, login and password for your server and Amnezia will configure it to connect via VPN automatically.
   
   We are not a VPN service, you don't have to connect to our servers and pay us anything. You free to use your own self-hosted VPS or you could purchase any VPS from any provider. To connect, use your own or purchase any VPS from any provider.
-Summary: Free open-source software to create a personal VPN on your server. Helps to access blocked content without revealing privacy even to VPN providers.
 
 Builds:
   - versionName: 'TAG_VERSION'
