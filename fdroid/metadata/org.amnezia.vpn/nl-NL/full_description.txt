@@ -1,0 +1,3 @@
+Geef het IP-adres, de login en het wachtwoord voor uw server op en Amnezia zal het configureren om automatisch verbinding te maken via VPN.
+
+We zijn geen VPN-service, je hoeft geen verbinding te maken met onze servers en ons iets te betalen. Je bent vrij om je eigen self-hosted VPS te gebruiken of je kunt een VPS kopen bij elke provider. Om verbinding te maken, gebruik je eigen of koop een VPS van elke provider.

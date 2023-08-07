@@ -1,0 +1,1 @@
+Libreng open-source na software para makalikha ng personal na VPN sa iyong server. Tumutulong ito na ma-access ang na-block na content nang hindi inilalantad ang privacy kahit na sa mga VPN provider.

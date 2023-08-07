@@ -1,0 +1,1 @@
+Perangkat lunak open-source gratis untuk membuat VPN pribadi di server Anda. Membantu untuk mengakses konten yang diblokir tanpa mengungkapkan privasi bahkan kepada penyedia VPN.

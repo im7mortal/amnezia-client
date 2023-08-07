@@ -1,0 +1,3 @@
+Specifu la IP-adreson, ensalutnomon kaj pasvorton por via servilo kaj Amnezia agordos ĝin por aŭtomate konektiĝi per VPN.
+
+Ni ne estas VPN-servo, vi ne devas konektiĝi al niaj serviloj kaj pagi al ni ion ajn. Vi povas libere uzi vian propran gastigitan VPS aŭ vi povas aĉeti iun VPS de iu ajn provizanto. Por konektiĝi, uzu vian propran aŭ aĉetu iun VPS de iu ajn provizanto.

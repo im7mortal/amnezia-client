@@ -1,0 +1,3 @@
+Itukoy ang IP address, login at password para sa iyong server at i-configure ng Amnezia ito upang kusa itong kumonekta sa pamamagitan ng VPN.
+
+Hindi kami isang VPN service, hindi mo kailangang kumonekta sa aming mga server at magbayad sa amin ng kahit ano. Libre kang gumamit ng iyong sariling self-hosted VPS o maaari kang bumili ng anumang VPS mula sa anumang provider. Para kumonekta, gamitin ang iyong sarili o bumili ng anumang VPS mula sa anumang provider.
