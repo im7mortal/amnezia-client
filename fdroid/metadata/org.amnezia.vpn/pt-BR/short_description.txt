@@ -1,0 +1,1 @@
+Software de código aberto gratuito para criar uma VPN pessoal no seu servidor. Ajuda a acessar conteúdo bloqueado sem revelar a privacidade, mesmo para provedores de VPN.

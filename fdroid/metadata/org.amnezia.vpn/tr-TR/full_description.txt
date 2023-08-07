@@ -1,0 +1,3 @@
+Sunucunuz için IP adresini, girişi ve şifreyi belirtin ve Amnezia, otomatik olarak VPN üzerinden bağlanacak şekilde onu yapılandırır.
+
+Biz bir VPN hizmeti değiliz, sunucularımıza bağlanmak ve bize herhangi bir şey ödemek zorunda değilsiniz. Kendi kendine barındırılan VPS'nizi kullanmakta özgürsünüz veya herhangi bir sağlayıcıdan herhangi bir VPS satın alabilirsiniz. Bağlanmak için, kendi VPS'nizi kullanın veya herhangi bir sağlayıcıdan satın alın.

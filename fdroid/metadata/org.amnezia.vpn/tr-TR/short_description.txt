@@ -1,0 +1,1 @@
+Sunucunuzda kişisel bir VPN oluşturmak için ücretsiz açık kaynaklı yazılım. Gizliliği, VPN sağlayıcılarına bile ifşa etmeden engellenen içeriğe erişim sağlar.

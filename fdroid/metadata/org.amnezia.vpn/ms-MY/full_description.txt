@@ -1,0 +1,3 @@
+Nyatakan alamat IP, log masuk dan kata laluan untuk pelayan anda dan Amnezia akan mengkonfigurasikannya untuk disambungkan secara automatik melalui VPN.
+
+Kami bukan perkhidmatan VPN, anda tidak perlu menyambung ke pelayan kami dan membayar kami apa-apa. Anda bebas untuk menggunakan VPS hos sendiri anda atau anda boleh membeli VPS dari mana-mana pembekal. Untuk menyambung, gunakan sendiri anda atau beli VPS dari mana-mana pembekal.
