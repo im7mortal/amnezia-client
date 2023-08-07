@@ -1,0 +1,3 @@
+Adresa IP, têketina û şîfreya servera xwe diyar bikin û Amnezia ewê otomatîk ji bo girêdana bi VPN re veşêre.
+
+Em xizmeta VPN ne ne, hûn ne hewce ne ku bi serverên me re girêdan bikin û me tiştekî bidin me. Hûn azad in ku VPS'a xwe ya xwe-sazkirî bikar bînin an jî hûn dikarin ji her cure VPS ji her cure pêşkêşkarê bikirin. Ji bo girêdana, bikarhêner VPS'ê xwe bikar bînin an jî ji her cure pêşkêşkarê bikirin.

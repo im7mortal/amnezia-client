@@ -1,1 +1,1 @@
-DEV-test Specify IP address, login and password for your server and Amnezia will configure it to connect via VPN automatically.
+Free open-source software to create a personal VPN on your server. Helps to access blocked content without revealing privacy even to VPN providers.
