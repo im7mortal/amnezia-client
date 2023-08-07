@@ -1,0 +1,1 @@
+DEV-test Specify IP address, login and password for your server and Amnezia will configure it to connect via VPN automatically.
