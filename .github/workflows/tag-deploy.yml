@@ -193,7 +193,7 @@ jobs:
         aws s3 cp s3://amneziavpn/fdroid/repo fdroid/repo --recursive
         aws s3 cp s3://amneziavpn/fdroid/archive fdroid/archive --recursive
         
-        cp fdroid/repo-icon.png fdroid/repo/icons
+        cp fdroid/repo-icon.svg fdroid/repo/icons
         cp fdroid/archive-icon.png fdroid/archive/icons
         
 
