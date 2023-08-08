@@ -193,7 +193,7 @@ jobs:
         aws s3 cp s3://amneziavpn/fdroid/repo fdroid/repo --recursive
         aws s3 cp s3://amneziavpn/fdroid/archive fdroid/archive --recursive
 
-      # something broken in f-droid. So we copy icons explicitly
+        ### something is broken in f-droid. So we copy icons explicitly
         cp fdroid/repo-icon.png fdroid/repo/icons
         cp fdroid/archive-icon.png fdroid/archive/icons
         
