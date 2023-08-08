@@ -192,6 +192,10 @@ jobs:
       run: |
         aws s3 cp s3://amneziavpn/fdroid/repo fdroid/repo --recursive
         aws s3 cp s3://amneziavpn/fdroid/archive fdroid/archive --recursive
+        
+        cp repo-icon.png fdroid/repo/icons
+        cp archive-icon.png fdroid/archive/icons
+        
 
 #    - name: Run fdroid publish
 #      run: |

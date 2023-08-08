@@ -76,7 +76,7 @@ archive_older: 3
 # set the filename here.  You must still copy it into place in
 # repo/icons/ and/or archive/icons/.
 
-repo_icon: icon.png
+repo_icon: repo-icon.png
 archive_icon: archive-icon.png
 
 # This allows a specific kind of insecure APK to be included in the
