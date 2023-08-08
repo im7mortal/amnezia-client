@@ -162,7 +162,7 @@ jobs:
         sudo chmod 0600 fdroid/config.yml
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -192,7 +192,8 @@ jobs:
       run: |
         aws s3 cp s3://amneziavpn/fdroid/repo fdroid/repo --recursive
         aws s3 cp s3://amneziavpn/fdroid/archive fdroid/archive --recursive
-        
+
+      # something broken in f-droid. So we copy icons explicitly
         cp fdroid/repo-icon.png fdroid/repo/icons
         cp fdroid/archive-icon.png fdroid/archive/icons
         
