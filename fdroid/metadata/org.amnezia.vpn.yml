@@ -1,0 +1,27 @@
+Categories:
+  - Internet
+  - Connectivity
+  - Security
+  - System
+License: GPL-3.0
+SourceCode: https://github.com/amnezia-vpn/amnezia-client
+IssueTracker: https://github.com/amnezia-vpn/amnezia-client/issues
+Donate: https://amnezia.org/en/about
+Bitcoin: bc1qn9rhsffuxwnhcuuu4qzrwp4upkrq94xnh8r26u
+
+Name: Amnezia VPN
+
+Builds:
+  - versionName: 'TAG_VERSION'
+    versionCode: TAG_CODE_VERSION
+    commit: 'TAG_VERSION'
+    subdir: app
+    gradle:
+      - yes
+    output: org.amnezia.vpn_TAG_VERSION.apk
+
+AutoUpdateMode: Version %v
+UpdateCheckMode: Tags
+CurrentVersion: 'TAG_VERSION'
+CurrentVersionCode: TAG_CODE_VERSION
+

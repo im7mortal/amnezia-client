@@ -1,0 +1,3 @@
+Hãy chỉ định địa chỉ IP, đăng nhập và mật khẩu cho máy chủ của bạn và Amnezia sẽ cấu hình nó để tự động kết nối qua VPN.
+
+Chúng tôi không phải là một dịch vụ VPN, bạn không cần phải kết nối đến máy chủ của chúng tôi và trả tiền cho chúng tôi. Bạn có thể sử dụng dịch vụ VPS tự lưu trữ của mình hoặc bạn có thể mua bất kỳ VPS nào từ bất kỳ nhà cung cấp nào. Để kết nối, hãy sử dụng VPS của riêng bạn hoặc mua từ bất kỳ nhà cung cấp nào.

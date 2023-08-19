@@ -1,0 +1,3 @@
+Angi IP-adressen, påloggingen og passordet for serveren din, og Amnezia vil konfigurere den til å koble til automatisk via VPN.
+
+Vi er ikke en VPN-tjeneste, du trenger ikke å koble til serverne våre og betale oss noe. Du er fri til å bruke din egen selv-vert VPS, eller du kan kjøpe en VPS fra en hvilken som helst leverandør. For å koble til, bruk din egen eller kjøp en VPS fra en hvilken som helst leverandør.

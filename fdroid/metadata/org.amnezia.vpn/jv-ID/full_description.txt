@@ -1,0 +1,3 @@
+Nyatakna alamat IP, log mlebu lan sandhi tumrap server sampeyan lan Amnezia bakal ngatur supaya nyambung kanthi otomatis ngliwati VPN.
+
+Awit kita iki dudu layanan VPN, sampeyan ora kudu nyambung menyang server kita lan menehi kita apa-apa. Sampeyan bisa nggunakake VPS host dhewe utawa tuku VPS saka panyedia apa wae. Kanggo nyambung, gunakna dhewe utawa tuku VPS saka panyedia apa wae.

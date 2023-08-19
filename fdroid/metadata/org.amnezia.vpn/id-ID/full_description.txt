@@ -1,0 +1,3 @@
+Tentukan alamat IP, login, dan kata sandi untuk server Anda dan Amnezia akan mengkonfigurasikannya untuk terhubung secara otomatis melalui VPN.
+
+Kami bukan layanan VPN, Anda tidak perlu terhubung ke server kami dan membayar kami apa pun. Anda bebas menggunakan VPS host Anda sendiri atau Anda dapat membeli VPS apa pun dari penyedia mana pun. Untuk terhubung, gunakan sendiri Anda atau beli VPS apa pun dari penyedia mana pun.

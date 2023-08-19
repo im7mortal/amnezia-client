@@ -1,0 +1,1 @@
+Gratis open source-programvare for å opprette en personlig VPN på serveren din. Hjelper med å få tilgang til blokkert innhold uten å avsløre personvern, selv til VPN-leverandører.

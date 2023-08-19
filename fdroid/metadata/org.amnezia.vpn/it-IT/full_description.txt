@@ -1,0 +1,3 @@
+Specifica indirizzo IP, login e password per il tuo server e Amnezia lo configurerà per connettersi automaticamente tramite VPN.
+
+Non siamo un servizio VPN, non devi connetterti ai nostri server e pagare nulla. Sei libero di utilizzare il tuo VPS auto-ospitato o potresti acquistare qualsiasi VPS da qualsiasi fornitore. Per connetterti, usa il tuo o acquista qualsiasi VPS da qualsiasi fornitore.
