@@ -11,115 +11,87 @@ jobs:
     name: 'Build-Android-Release'
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        include:
+          - abi: 'x86_64'
+            qt_arch: 'android_x86_64'
+
     env:
-      QT_VERSION: 6.4.1
-      QIF_VERSION: 4.5
+      QT_VERSION: 6.5.2
+      ANDROID_BUILD_PLATFORM: android-33
 
     steps:
-    - name: 'Install desktop Qt'
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: ${{ env.QT_VERSION }}
-        host: 'linux'
-        target: 'desktop'
-        arch: 'gcc_64'
-        modules: 'qtremoteobjects qt5compat qtimageformats qtshadertools'
-        dir: ${{ runner.temp }}
-        setup-python: 'true'
-        set-env: 'true'
-        extra: '--external 7z'
+      - name: 'Install desktop Qt'
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: 'linux'
+          target: 'desktop'
+          arch: 'gcc_64'
+          modules: 'qtremoteobjects qt5compat qtimageformats qtshadertools'
+          dir: ${{ runner.temp }}
+          setup-python: 'true'
+          set-env: 'true'
+          extra: '--external 7z'
 
-    - name: 'Install android Qt x86_64'
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: ${{ env.QT_VERSION }}
-        host: 'linux'
-        target: 'android'
-        arch: 'android_x86_64'
-        modules: 'qtremoteobjects qt5compat qtimageformats qtshadertools'
-        dir: ${{ runner.temp }}
-        setup-python: 'true'
-        set-env: 'true'
-        extra: '--external 7z'
+      - name: 'Install android Qt'
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: 'linux'
+          target: 'android'
+          arch: ${{ matrix.qt_arch }}
+          modules: 'qtremoteobjects qt5compat qtimageformats qtshadertools'
+          dir: ${{ runner.temp }}
+          setup-python: 'true'
+          set-env: 'true'
+          extra: '--external 7z'
 
-    - name: 'Install android Qt x86'
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: ${{ env.QT_VERSION }}
-        host: 'linux'
-        target: 'android'
-        arch: 'android_x86'
-        modules: 'qtremoteobjects qt5compat qtimageformats qtshadertools'
-        dir: ${{ runner.temp }}
-        setup-python: 'true'
-        set-env: 'true'
-        extra: '--external 7z'
+      - name: 'Grant execute permission for qt-cmake'
+        shell: bash
+        run: |
+          chmod +x ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/${{ matrix.qt_arch }}/bin/qt-cmake
 
-    - name: 'Install android Qt arm_v7'
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: ${{ env.QT_VERSION }}
-        host: 'linux'
-        target: 'android'
-        arch: 'android_armv7'
-        modules: 'qtremoteobjects qt5compat qtimageformats qtshadertools'
-        dir: ${{ runner.temp }}
-        setup-python: 'true'
-        set-env: 'true'
-        extra: '--external 7z'
+      - name: 'Get sources'
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
 
-    - name: 'Install android Qt arm_v8'
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: ${{ env.QT_VERSION }}
-        host: 'linux'
-        target: 'android'
-        arch: 'android_arm64_v8a'
-        modules: 'qtremoteobjects qt5compat qtimageformats qtshadertools'
-        dir: ${{ runner.temp }}
-        setup-python: 'true'
-        set-env: 'true'
-        extra: '--external 7z'
+      - name: 'Setup ccache'
+        uses: hendrikmuhs/ccache-action@v1.2
 
-    - name: 'Get sources'
-      uses: actions/checkout@v3
-      with:
-        path: main
-        submodules: 'true'
-        fetch-depth: 10
+      - name: 'Setup Java'
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'gradle'
 
-    - name: 'Setup ccache'
-      uses: hendrikmuhs/ccache-action@v1.2
+      - name: 'Setup Android NDK'
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: 'r25c'
+          local-cache: 'true'
 
-    - name: 'Setup Java'
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '11'
+      - name: 'Build project'
+        env:
+          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
+          QT_HOST_PATH: ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64
+          QT_ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android.keystore
+          QT_ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_ALIAS }}
+          QT_ANDROID_KEYSTORE_STORE_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_PASS }}
+          QT_ANDROID_KEYSTORE_KEY_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_PASS }}
+        shell: bash
+        run: ./deploy/build_android.sh --apk ${{ matrix.abi }} --platform ${{ env.ANDROID_BUILD_PLATFORM }}
 
-    - name: 'Build project'
-      run: |
-        export QT_HOST_PATH="${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64"
-        export NDK_VERSION=23c
-        export ANDROID_NDK_PLATFORM=android-23
-        export ANDROID_NDK_HOME=${{ runner.temp }}/android-ndk-r${NDK_VERSION}
-        export ANDROID_NDK_ROOT=$ANDROID_NDK_HOME
-
-        if [ ! -f $ANDROID_NDK_ROOT/ndk-build ]; then 
-          wget https://dl.google.com/android/repository/android-ndk-r${NDK_VERSION}-linux.zip -qO ${{ runner.temp }}/ndk.zip &&
-          unzip -q -d ${{ runner.temp }} ${{ runner.temp }}/ndk.zip ; 
-        fi
-
-        export QT_BIN_DIR=${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/android_arm64_v8a/bin
-        cd main
-        bash deploy/build_android.sh
-
-    - name: 'Upload APK'
-      uses: actions/upload-artifact@v3
-      with:
-        name: AmneziaVPN-release-unsigned.apk
-        path: /home/runner/work/amnezia-client/amnezia-client/main/AmneziaVPN-release-unsigned.apk
-        retention-days: 7
+      - name: 'Upload apk'
+        uses: actions/upload-artifact@v3
+        with:
+          name: AmneziaVPN-release-unsigned.apk
+          path: /home/runner/work/amnezia-client/amnezia-client/main/AmneziaVPN-release-unsigned.apk
+          retention-days: 7
 
   Update-F-Droid-Repository:
     name: 'Update-F-Droid-Repository'
@@ -168,10 +140,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-  #    - name: DEV download precompiled file for testing
-  #      run: |
-  #        mkdir -p fdroid/unsigned/
-  #        aws s3 cp s3://${{ secrets.SECRET_FDROID_BUCKET }}/org.amnezia.vpn_309.apk fdroid/unsigned/org.amnezia.vpn_${{ env.tagv }}.apk
+      #    - name: DEV download precompiled file for testing
+      #      run: |
+      #        mkdir -p fdroid/unsigned/
+      #        aws s3 cp s3://${{ secrets.SECRET_FDROID_BUCKET }}/org.amnezia.vpn_309.apk fdroid/unsigned/org.amnezia.vpn_${{ env.tagv }}.apk
 
       - name: Download unsigned APK from artifacts
         uses: actions/download-artifact@v3
@@ -192,7 +164,7 @@ jobs:
         run: |
           aws s3 cp s3://amneziavpn/fdroid/repo fdroid/repo --recursive
           aws s3 cp s3://amneziavpn/fdroid/archive fdroid/archive --recursive
-  
+          
           ### something is broken in f-droid. So we copy icons explicitly
           cp fdroid/repo-icon.png fdroid/repo/icons
           cp fdroid/archive-icon.png fdroid/archive/icons
