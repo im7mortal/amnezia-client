@@ -16,6 +16,12 @@ jobs:
         include:
           - abi: 'x86_64'
             qt_arch: 'android_x86_64'
+          - abi: 'x86'
+            qt_arch: 'android_x86'
+          - abi: 'armeabi-v7a'
+            qt_arch: 'android_armv7'
+          - abi: 'arm64-v8a'
+            qt_arch: 'android_arm64_v8a'
 
     env:
       QT_VERSION: 6.5.2
@@ -79,10 +85,6 @@ jobs:
         env:
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
           QT_HOST_PATH: ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64
-          QT_ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android.keystore
-          QT_ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_ALIAS }}
-          QT_ANDROID_KEYSTORE_STORE_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_PASS }}
-          QT_ANDROID_KEYSTORE_KEY_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_PASS }}
         shell: bash
         run: ./deploy/build_android.sh --apk ${{ matrix.abi }} --platform ${{ env.ANDROID_BUILD_PLATFORM }}
 
@@ -90,7 +92,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: AmneziaVPN-release-unsigned.apk
-          path: /home/runner/work/amnezia-client/amnezia-client/main/AmneziaVPN-release-unsigned.apk
+          path: deploy/build/AmneziaVPN-${{ matrix.abi }}-release-signed.apk
           retention-days: 7
 
   Update-F-Droid-Repository:
