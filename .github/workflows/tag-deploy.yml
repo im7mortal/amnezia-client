@@ -75,17 +75,28 @@ jobs:
           ndk-version: 'r25c'
           local-cache: 'true'
 
+      - name: 'Decode keystore secret to file'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
+        shell: bash
+        run: |
+          echo $KEYSTORE_BASE64 | base64 --decode > android.keystore
+
       - name: 'Build project'
         env:
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
           QT_HOST_PATH: ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64
+          QT_ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android.keystore
+          QT_ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_ALIAS }}
+          QT_ANDROID_KEYSTORE_STORE_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_PASS }}
+          QT_ANDROID_KEYSTORE_KEY_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_PASS }}
         shell: bash
         run: ./deploy/build_android.sh --apk ${{ matrix.abi }} --platform ${{ env.ANDROID_BUILD_PLATFORM }}
 
       - name: 'Upload apk'
         uses: actions/upload-artifact@v3
         with:
-          name: AmneziaVPN-release-unsigned.apk
+          name: AmneziaVPN-release-signed.apk
           path: deploy/build/AmneziaVPN-${{ matrix.abi }}-release-signed.apk
           retention-days: 7
 
@@ -145,11 +156,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: AmneziaVPN-release-unsigned.apk
-          path: fdroid/unsigned
+          path: fdroid/signed
 
       - name: Set required artifact APK name
         run: |
-          mv fdroid/unsigned/AmneziaVPN-release-unsigned.apk fdroid/unsigned/org.amnezia.vpn_${{ env.tagv }}.apk
+          mv fdroid/signed/AmneziaVPN-release-signed.apk fdroid/signed/org.amnezia.vpn_${{ env.tagv }}.apk
 
       - name: Set version in template yaml
         run: |
