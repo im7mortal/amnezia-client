@@ -77,19 +77,19 @@ jobs:
 
       - name: 'Decode keystore secret to file'
         env:
-          KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_P12 }}
         shell: bash
         run: |
-          echo $KEYSTORE_BASE64 | base64 --decode > android.keystore
+          echo $KEYSTORE_P12 | base64 --decode > android.keystore
 
       - name: 'Build project'
         env:
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
           QT_HOST_PATH: ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64
           QT_ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android.keystore
-          QT_ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_ALIAS }}
-          QT_ANDROID_KEYSTORE_STORE_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_PASS }}
-          QT_ANDROID_KEYSTORE_KEY_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_PASS }}
+          QT_ANDROID_KEYSTORE_ALIAS: "keystore_alias"
+          QT_ANDROID_KEYSTORE_STORE_PASS: ${{ secrets.SECRET_KEYSTOREPASS }}
+          QT_ANDROID_KEYSTORE_KEY_PASS: ${{ secrets.SECRET_KEYPASS }}
         shell: bash
         run: ./deploy/build_android.sh --apk ${{ matrix.abi }} --platform ${{ env.ANDROID_BUILD_PLATFORM }}
 
