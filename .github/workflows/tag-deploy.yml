@@ -87,7 +87,7 @@ jobs:
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
           QT_HOST_PATH: ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64
           QT_ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android.keystore
-          QT_ANDROID_KEYSTORE_ALIAS: "keystore_alias"
+          QT_ANDROID_KEYSTORE_ALIAS: "c070da90"
           QT_ANDROID_KEYSTORE_STORE_PASS: ${{ secrets.SECRET_KEYSTOREPASS }}
           QT_ANDROID_KEYSTORE_KEY_PASS: ${{ secrets.SECRET_KEYPASS }}
         shell: bash
