@@ -152,15 +152,15 @@ jobs:
       #        mkdir -p fdroid/unsigned/
       #        aws s3 cp s3://${{ secrets.SECRET_FDROID_BUCKET }}/org.amnezia.vpn_309.apk fdroid/unsigned/org.amnezia.vpn_${{ env.tagv }}.apk
 
-      - name: Download unsigned APK from artifacts
+      - name: Download signed APK from artifacts
         uses: actions/download-artifact@v3
         with:
-          name: AmneziaVPN-release-unsigned.apk
-          path: fdroid/signed
+          name: AmneziaVPN-release-signed.apk
+          path: fdroid/repo
 
       - name: Set required artifact APK name
         run: |
-          mv fdroid/signed/AmneziaVPN-release-signed.apk fdroid/signed/org.amnezia.vpn_${{ env.tagv }}.apk
+          mv fdroid/repo/AmneziaVPN-release-signed.apk fdroid/repo/org.amnezia.vpn_${{ env.tagv }}.apk
 
       - name: Set version in template yaml
         run: |
