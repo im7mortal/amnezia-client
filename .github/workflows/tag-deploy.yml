@@ -80,7 +80,7 @@ jobs:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_P12 }}
         shell: bash
         run: |
-          echo $KEYSTORE_P12 | base64 --decode > android.keystore
+          echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > android.keystore
 
       - name: 'Build project'
         env:
