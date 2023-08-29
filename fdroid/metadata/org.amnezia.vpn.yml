@@ -22,6 +22,6 @@ Builds:
 
 AutoUpdateMode: Version %v
 UpdateCheckMode: Tags
-CurrentVersion: 'TAG_VERSION'
-CurrentVersionCode: TAG_CODE_VERSION
+CurrentVersion: v3.0.8
+CurrentVersionCode: 308
 
