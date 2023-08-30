@@ -176,10 +176,10 @@ jobs:
           cp fdroid/repo-icon.png fdroid/repo/icons
           cp fdroid/archive-icon.png fdroid/archive/icons
 
-      - name: Run fdroid publish
-        run: |
-          cd ./fdroid
-          fdroid publish
+#      - name: Run fdroid publish
+#        run: |
+#          cd ./fdroid
+#          fdroid publish
 
       - name: Run fdroid update
         run: |
