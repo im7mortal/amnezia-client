@@ -7,103 +7,103 @@ on:
 
 jobs:
 
-  Build-Android-Release:
-    name: 'Build-Android-Release'
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        include:
-          - abi: 'x86_64'
-            qt_arch: 'android_x86_64'
-
-    env:
-      QT_VERSION: 6.5.2
-      ANDROID_BUILD_PLATFORM: android-33
-
-    steps:
-      - name: 'Install desktop Qt'
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: ${{ env.QT_VERSION }}
-          host: 'linux'
-          target: 'desktop'
-          arch: 'gcc_64'
-          modules: 'qtremoteobjects qt5compat qtimageformats qtshadertools'
-          dir: ${{ runner.temp }}
-          setup-python: 'true'
-          set-env: 'true'
-          extra: '--external 7z'
-
-      - name: 'Install android Qt'
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: ${{ env.QT_VERSION }}
-          host: 'linux'
-          target: 'android'
-          arch: ${{ matrix.qt_arch }}
-          modules: 'qtremoteobjects qt5compat qtimageformats qtshadertools'
-          dir: ${{ runner.temp }}
-          setup-python: 'true'
-          set-env: 'true'
-          extra: '--external 7z'
-
-      - name: 'Grant execute permission for qt-cmake'
-        shell: bash
-        run: |
-          chmod +x ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/${{ matrix.qt_arch }}/bin/qt-cmake
-
-      - name: 'Get sources'
-        uses: actions/checkout@v3
-        with:
-          submodules: 'true'
-
-      - name: 'Setup ccache'
-        uses: hendrikmuhs/ccache-action@v1.2
-
-      - name: 'Setup Java'
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-          cache: 'gradle'
-
-      - name: 'Setup Android NDK'
-        id: setup-ndk
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: 'r25c'
-          local-cache: 'true'
-
-      - name: 'Decode keystore secret to file'
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_P12 }}
-        shell: bash
-        run: |
-          echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > android.keystore
-
-      - name: 'Build project'
-        env:
-          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
-          QT_HOST_PATH: ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64
-          QT_ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android.keystore
-          QT_ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_ALIAS }}
-          QT_ANDROID_KEYSTORE_STORE_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_PASS }}
-          QT_ANDROID_KEYSTORE_KEY_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_PASS }}
-        shell: bash
-        run: ./deploy/build_android.sh --apk ${{ matrix.abi }} --platform ${{ env.ANDROID_BUILD_PLATFORM }}
-
-      - name: 'Upload apk'
-        uses: actions/upload-artifact@v3
-        with:
-          name: AmneziaVPN-release-signed.apk
-          path: deploy/build/AmneziaVPN-${{ matrix.abi }}-release-signed.apk
-          retention-days: 7
+#  Build-Android-Release:
+#    name: 'Build-Android-Release'
+#    runs-on: ubuntu-latest
+#
+#    strategy:
+#      matrix:
+#        include:
+#          - abi: 'x86_64'
+#            qt_arch: 'android_x86_64'
+#
+#    env:
+#      QT_VERSION: 6.5.2
+#      ANDROID_BUILD_PLATFORM: android-33
+#
+#    steps:
+#      - name: 'Install desktop Qt'
+#        uses: jurplel/install-qt-action@v3
+#        with:
+#          version: ${{ env.QT_VERSION }}
+#          host: 'linux'
+#          target: 'desktop'
+#          arch: 'gcc_64'
+#          modules: 'qtremoteobjects qt5compat qtimageformats qtshadertools'
+#          dir: ${{ runner.temp }}
+#          setup-python: 'true'
+#          set-env: 'true'
+#          extra: '--external 7z'
+#
+#      - name: 'Install android Qt'
+#        uses: jurplel/install-qt-action@v3
+#        with:
+#          version: ${{ env.QT_VERSION }}
+#          host: 'linux'
+#          target: 'android'
+#          arch: ${{ matrix.qt_arch }}
+#          modules: 'qtremoteobjects qt5compat qtimageformats qtshadertools'
+#          dir: ${{ runner.temp }}
+#          setup-python: 'true'
+#          set-env: 'true'
+#          extra: '--external 7z'
+#
+#      - name: 'Grant execute permission for qt-cmake'
+#        shell: bash
+#        run: |
+#          chmod +x ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/${{ matrix.qt_arch }}/bin/qt-cmake
+#
+#      - name: 'Get sources'
+#        uses: actions/checkout@v3
+#        with:
+#          submodules: 'true'
+#
+#      - name: 'Setup ccache'
+#        uses: hendrikmuhs/ccache-action@v1.2
+#
+#      - name: 'Setup Java'
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'temurin'
+#          java-version: '11'
+#          cache: 'gradle'
+#
+#      - name: 'Setup Android NDK'
+#        id: setup-ndk
+#        uses: nttld/setup-ndk@v1
+#        with:
+#          ndk-version: 'r25c'
+#          local-cache: 'true'
+#
+#      - name: 'Decode keystore secret to file'
+#        env:
+#          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_P12 }}
+#        shell: bash
+#        run: |
+#          echo "${{ secrets.KEYSTORE_P12 }}" | base64 -d - > android.keystore
+#
+#      - name: 'Build project'
+#        env:
+#          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
+#          QT_HOST_PATH: ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64
+#          QT_ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android.keystore
+#          QT_ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_ALIAS }}
+#          QT_ANDROID_KEYSTORE_STORE_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_PASS }}
+#          QT_ANDROID_KEYSTORE_KEY_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_KEY_PASS }}
+#        shell: bash
+#        run: ./deploy/build_android.sh --apk ${{ matrix.abi }} --platform ${{ env.ANDROID_BUILD_PLATFORM }}
+#
+#      - name: 'Upload apk'
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: AmneziaVPN-release-signed.apk
+#          path: deploy/build/AmneziaVPN-${{ matrix.abi }}-release-signed.apk
+#          retention-days: 7
 
   Update-F-Droid-Repository:
     name: 'Update-F-Droid-Repository'
-    needs:
-      - 'Build-Android-Release'
+#    needs:
+#      - 'Build-Android-Release'
     runs-on: ubuntu-latest
     steps:
 
@@ -147,16 +147,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      #    - name: DEV download precompiled file for testing
-      #      run: |
-      #        mkdir -p fdroid/unsigned/
-      #        aws s3 cp s3://${{ secrets.SECRET_FDROID_BUCKET }}/org.amnezia.vpn_309.apk fdroid/unsigned/org.amnezia.vpn_${{ env.tagv }}.apk
+      - name: DEV download precompiled file for testing
+        run: |
+          mkdir -p fdroid/repo/
+          aws s3 cp s3://amnezia-storage/AmneziaVPN-x86_64-release-signed.apk fdroid/repo/AmneziaVPN-release-signed.apk
 
-      - name: Download signed APK from artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: AmneziaVPN-release-signed.apk
-          path: fdroid/repo
+#      - name: Download signed APK from artifacts
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: AmneziaVPN-release-signed.apk
+#          path: fdroid/repo
 
       - name: Set required artifact APK name
         run: |
