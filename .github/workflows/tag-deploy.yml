@@ -115,7 +115,7 @@ jobs:
 
       - name: HACK fdroid tools doesn't work with no ACL buckets
         run: |
-          sudo curl -o /usr/lib/python3/dist-packages/fdroidserver/deploy.py https://gitlab.com/petrl/fdroidserver/-/raw/a3c31b962a6daaa97e4463a851ccef741895feb7/fdroidserver/deploy.py
+          sudo curl -o /usr/lib/python3/dist-packages/fdroidserver/deploy.py https://gitlab.com/petrl/fdroidserver/-/raw/f16c5be648036bc4759cba9b016fb0861cbe205f/fdroidserver/deploy.py
 
       - name: 'Get sources'
         uses: actions/checkout@v3
